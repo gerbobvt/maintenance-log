@@ -1,0 +1,30 @@
+﻿@page "/vehicles"
+
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using MaintenanceLog.DataAccess
+@using MaintenanceLog.Models
+@inject IDbContextFactory<MaintenanceLogContext> contextFactory
+<PageTitle>Vehicles</PageTitle>
+<h3>Vehicles</h3>
+
+<QuickGrid Items="@vehicles">
+    <PropertyColumn Property="@(p => p.Name)" Sortable="true"/>
+    <PropertyColumn Property="@(p => p.Make)" Sortable="true"/>
+    <PropertyColumn Property="@(p => p.Model)" Sortable="true" />
+    <PropertyColumn Property="@(p => p.Year)" Sortable="true" />
+</QuickGrid>
+
+
+@code {
+    private IQueryable<Vehicle> vehicles;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        var context = contextFactory.CreateDbContext();
+
+        vehicles = context.Vehicles.ToList().AsQueryable();
+    }
+}

@@ -1,4 +1,8 @@
+using MaintenanceLog;
 using MaintenanceLog.Components;
+using MaintenanceLog.DataAccess;
+
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,7 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddDbContextFactory<MaintenanceLogContext>(opt =>
+    opt.UseSqlite("Data Source=MaintenanceLog.db"));
+
 var app = builder.Build();
+
+await using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
+var options = scope.ServiceProvider.GetRequiredService<DbContextOptions<MaintenanceLogContext>>();
+await DbUtils.EnsureDbCreated(options);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
